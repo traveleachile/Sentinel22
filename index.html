@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sentinel Reservas</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧭</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF3F5;--card:#fff;--ink:#12263A;--mut:#5B6B7A;--line:#D5DEE4;--acc:#0F7C8C;--acc2:#E0A100;--ok:#1E8E5A;--bad:#C0392B;--side:#12263A;--sidetx:#C9D6DF;color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0C1822;--card:#142533;--ink:#E6EEF3;--mut:#9AAAB8;--line:#243B4D;--acc:#3CB5C6;--acc2:#F0B92E;--ok:#4CC38A;--bad:#F07A6C;--side:#091219;--sidetx:#9FB3C2;color-scheme:dark}}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Source Sans 3",system-ui,sans-serif;display:flex;min-height:100vh}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;margin:0 0 .5rem;letter-spacing:-.01em}
+h1{font-size:1.5rem}h2{font-size:1.15rem}h3{font-size:1rem}
+aside{width:224px;background:var(--side);color:var(--sidetx);padding:1.2rem .8rem;flex:none;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{font:700 1.15rem Sora,sans-serif;color:#fff;padding:0 .6rem 1rem}.brand small{display:block;font:400 .75rem "Source Sans 3";color:var(--sidetx)}
+nav button{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;padding:.6rem .7rem;border-radius:8px;cursor:pointer}
+nav button:hover{background:#ffffff14}nav button[aria-current=true]{background:var(--acc);color:#fff;font-weight:600}
+main{flex:1;min-width:0;padding:1.4rem;max-width:1100px}
+.banner{background:#E0A10022;border:1px solid var(--acc2);border-radius:8px;padding:.55rem .8rem;font-size:.9rem;margin-bottom:1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem;margin-bottom:1rem}
+.grid{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.kpi b{display:block;font:700 1.5rem Sora,sans-serif}.kpi span{color:var(--mut);font-size:.9rem}
+label{display:block;font-size:.85rem;color:var(--mut);margin-bottom:.6rem}
+input,select,textarea{width:100%;padding:.5rem .6rem;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;margin-top:.2rem}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:.55rem 1rem;font:600 .95rem "Source Sans 3";cursor:pointer}
+.btn.sec{background:none;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:.25rem .6rem;font-size:.85rem}.btn.bad{background:var(--bad)}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:end}.row>*{flex:1;min-width:130px}.row>.btn{flex:none}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;padding:.45rem .5rem;border-bottom:1px solid var(--line);white-space:nowrap}th{color:var(--mut);font-weight:600}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.tag{display:inline-block;padding:.05rem .5rem;border-radius:99px;font-size:.78rem;border:1px solid var(--line)}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.pend{color:var(--acc2)}.mut{color:var(--mut)}
+.tag.ok{border-color:var(--ok)}.tag.bad{border-color:var(--bad)}.tag.pend{border-color:var(--acc2)}.tag.blue{border-color:var(--acc);color:var(--acc)}
+.tag.azul{border-color:#2563C9;color:#2563C9}.tag.nar{border-color:#D9730D;color:#D9730D}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .tag.azul{border-color:#6AA6F5;color:#6AA6F5}:root:not([data-theme=light]) .tag.nar{border-color:#F29B4B;color:#F29B4B}}
+.toast{position:fixed;right:1rem;bottom:calc(1rem + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:.6rem 1rem;border-radius:8px;z-index:20}
+.modal{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:30;padding:1rem}
+.voucher{background:#fff;color:#12263A;max-width:460px;width:100%;border-radius:12px;padding:1.4rem;border-top:8px solid #0F7C8C}
+@media(max-width:760px){body{flex-direction:column}aside{width:100%;height:auto;position:static;padding:.6rem}nav{display:flex;overflow-x:auto;gap:.3rem}nav button{white-space:nowrap;width:auto}.brand{padding-bottom:.4rem}}
+@media print{body>*:not(.modal){display:none}.modal{position:static;background:none}.voucher button{display:none}}
+</style></head><body>
+<aside><div class="brand">Sentinel Reservas<small>Turismo Viaja</small></div><nav id="nav"></nav></aside>
+<main id="app"></main>
+<script>
+// ===== Estado de la aplicación. Se guarda en el localStorage de este navegador (clave sentinel_reservas_v1); los datos de demostración llevan la marca [DEMO]. =====
+const clp=n=>'$'+Math.round(n||0).toLocaleString('es-CL');
+const pc=n=>(isFinite(n)?(n*100).toFixed(1):'—')+'%';
+let lastId=0;const nid=()=>{lastId=Math.max(lastId+1,Date.now()*1000);return lastId};
+const KEY='sentinel_reservas_v1',VER=2,esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),unesc=s=>s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&');
+const blank=()=>({ver:VER,iva:'',user:'Administrador',channels:[{n:'Venta directa',c:0}],exc:[],resources:[],deps:[],res:[],pay:[],exp:[],audit:[]});
+let S=blank(),storeOK=true,locked=false,warned=false,lockWhy=[],lockCopy='';
+// Valida la estructura sin modificar nada y solo completa las secciones que faltan en datos antiguos. Si los datos están dañados o son de una versión no compatible, lanza un error con la lista de problemas (nunca los reemplaza por datos vacíos).
+function migrate(d){const er=validateBackup(d,true);if(er.length)throw Error(er.join('\n'));const b=blank();d=Object.assign(b,d);['channels','exc','resources','deps','res','pay','exp','audit'].forEach(k=>{if(!Array.isArray(d[k]))d[k]=b[k]});d.ver=VER;return d}
+// Conserva una copia del contenido ilegible sin pisar copias anteriores; devuelve la clave usada ('' si no se pudo copiar).
+function keepCopy(raw){try{const k=KEY+'_corrupt',o=localStorage.getItem(k),k2=(o===null||o===raw)?k:k+'_'+Date.now();localStorage.setItem(k2,raw);return k2}catch(_){return''}}
+// Si los datos guardados están dañados o son incompatibles: se bloquea el guardado (save() no escribe), no se toca el original y se informa en el banner.
+function load(){let raw=null;try{raw=localStorage.getItem(KEY)}catch(e){storeOK=false;return}
+ if(raw){try{let d;try{d=JSON.parse(raw)}catch(e){throw Error('el contenido guardado no es un JSON válido')}S=migrate(d)}catch(e){locked=true;lockWhy=String(e.message).split('\n');lockCopy=keepCopy(raw)}}}
+function save(){if(locked||!storeOK)return false;try{localStorage.setItem(KEY,JSON.stringify(S));warned=false;return true}catch(e){if(!warned){warned=true;alert('No se pudo guardar: almacenamiento lleno o bloqueado. Exporta un respaldo ahora.')}return false}}
+const log=a=>{S.audit.unshift({t:new Date().toLocaleString('es-CL'),u:S.user,a});if(S.audit.length>500)S.audit.length=500};
+let view='panel',selExc=1,ch=0,method='margin',margin=30,profit=15000,manual='',toastT;
+const $=id=>document.getElementById(id),v=id=>esc($(id).value);
+const E=id=>S.exc.find(e=>e.id==id),cur=()=>E(selExc)||S.exc[0];
+function toast(m){clearTimeout(toastT);let t=document.querySelector('.toast');if(!t){t=document.createElement('div');t.className='toast';document.body.appendChild(t)}t.textContent=m;toastT=setTimeout(()=>t.remove(),2800)}
+
+// ===== Motor de tarifas =====
+function cEff(c){const r=parseFloat(S.iva);return(c.base==='bruto'&&c.iva==='rec'&&r>0)?c.amt/(1+r/100):c.amt}
+function totals(e){let f=0,va=0;((e&&e.costs)||[]).forEach(c=>{c.t==='fijo'?f+=cEff(c):va+=cEff(c)});return{f,va}}
+function priceFor(e,pax,comm){const{f,va}=totals(e),cost=f/pax+va;
+ const dn=method==='margin'?1-comm-margin/100:1-comm;if(dn<=0)return NaN;return(method==='margin'?cost:cost+profit)/dn}
+function occ(e,P,comm){const{f,va}=totals(e),rows=[];for(let n=1;n<=e.cap;n++){const rev=P*n,cm=rev*comm,cost=f+va*n,u=rev-cm-cost;rows.push({n,rev,cm,cost,u,m:rev?u/rev:0})}return rows}
+function breakEven(e,P,comm){const{f,va}=totals(e),unit=P*(1-comm)-va;if(unit<=0)return null;const n=Math.ceil(f/unit);return n>e.cap?null:n}
+
+// ===== Reservas / cupos / finanzas =====
+const pax=r=>r.ad+r.mn.length;
+const sold=d=>S.res.filter(r=>r.dep==d.id&&r.st!=='Cancelada').reduce((s,r)=>s+pax(r),0);
+const paid=r=>S.pay.filter(p=>p.res==r.id&&!p.void).reduce((s,p)=>s+(p.k==='dev'?-p.amt:p.amt),0);
+const total=r=>r.st==='Cancelada'?0:pax(r)*r.unit;
+const dep=id=>S.deps.find(d=>d.id==id);
+const depLabel=d=>{if(!d)return'(salida inexistente)';const e=E(d.exc);return`${e?e.name.replace(' (ficticia)',''):'(excursión inexistente)'} · ${d.date} ${d.time}`};
+const Z=id=>S.resources.find(r=>r.id==id);
+// Cupos realmente disponibles: el menor entre los cupos de la salida y la capacidad de la excursión
+const avail=d=>{const e=E(d.exc);return Math.min(d.quota,e?e.cap:d.quota)-sold(d)};
+// Mayor cantidad de pasajeros reservados en una salida vigente de la excursión
+const bookedMax=id=>S.deps.filter(d=>d.exc==id&&d.st!=='Cancelada').reduce((m,d)=>Math.max(m,sold(d)),0);
+// Enteros >= 0 (vacío = 0; negativos, decimales o texto = NaN) y lista de edades 0-17 (null si hay algún dato inválido)
+const cnt=s=>{s=String(s).trim();return s===''?0:/^\d+$/.test(s)?parseInt(s,10):NaN};
+const parseMn=s=>{const t=String(s).split(',').map(x=>x.trim()).filter(x=>x!=='');return t.every(x=>/^\d{1,2}$/.test(x)&&+x<18)?t.map(Number):null};
+// Duración en minutos a partir del texto de la excursión ("8 h", "90 min", "1h30", "2 días", "1:30"). null si no se reconoce.
+function durMin(s){s=String(s||'').toLowerCase().replace(/,/g,'.').replace(/(\d+)\s*h\s*(\d{1,2})(?!\d)(?!\s*[a-z])/g,'$1 h $2 min');let t=0,ok=false,m;
+ if(/medio\s*d[ií]a|half\s*day/.test(s))return 240;if(/d[ií]a\s*completo|full\s*day/.test(s))return 1440;
+ const re=/(\d+(?:\.\d+)?)\s*(d[ií]as?|horas?|hrs?|h|minutos?|mins?|m|d)(?![a-záéíóúñ])/g;
+ while((m=re.exec(s))){const q=parseFloat(m[1]),u=m[2];t+=u[0]==='d'?q*1440:u[0]==='h'?q*60:q;ok=true}
+ if(!ok){m=/^\s*(\d+):(\d{2})\s*(h|hrs?|horas?)?\s*$/.exec(s);if(m){t=+m[1]*60+ +m[2];ok=true}}
+ return ok&&t>0?t:null}
+// Selector de duración: Medio día (4 h) / Día completo (toda la fecha) / Abierta (horas a elegir)
+function durHtml(a,b,cur){const full=/d[ií]a\s*completo|full\s*day/i.test(cur||''),half=/medio\s*d[ií]a|half\s*day/i.test(cur||''),op=!full&&!half,m=op?durMin(cur):null,h=m?+(m/60).toFixed(2):'';
+ return`<label>Duración<select id="${a}" onchange="document.getElementById('${b}').disabled=this.value!=='Abierta'">${[['Medio día',half],['Día completo',full],['Abierta',op]].map(o=>`<option ${o[1]?'selected':''}>${o[0]}</option>`).join('')}</select></label><label>Horas (si es abierta)<input id="${b}" type="number" min="0.5" max="240" step="0.5" value="${h}" placeholder="Ej: 8" ${op?'':'disabled'}></label>`}
+function readDur(a,b){const k=v(a);if(k!=='Abierta')return k;const h=parseFloat(v(b));return h>0&&h<=240?h+' h':null}
+// Intervalo [inicio, fin) de una salida en minutos absolutos. Sin hora o sin duración reconocible: se considera todo el día (criterio conservador).
+function span(d){const t0=Date.parse((d.date||'')+'T00:00:00Z');if(isNaN(t0))return null;const e=E(d.exc),m=/^(\d{1,2}):(\d{2})/.exec(d.time||''),dm=durMin(e&&e.dur),s=t0/6e4,h=m?(+m[1])*60+(+m[2]):0;
+ const full=dm===1440&&/d[ií]a\s*completo|full\s*day/i.test((e&&e.dur)||'');return m&&dm&&!full?[s+h,s+h+dm,0]:[s,s+1440,full?2:1]}
+function overlap(a,b){const x=span(a),y=span(b);return x&&y?x[0]<y[1]&&y[0]<x[1]:a.date===b.date}
+// ===== Semáforo de disponibilidad de recursos (guías, conductores, etc.) =====
+// Cada día tiene dos períodos: mañana (antes de las 12:00) y tarde (desde las 12:00). Una salida ocupa los períodos que toca; Full Day (o sin horario reconocible) ocupa ambos.
+// 🔴 día bloqueado (recurso.bloq) · 🔵 sin períodos libres · 🟠 un período ocupado y otro libre · 🟢 completamente libre
+const dayStr=t=>new Date(t*864e5).toISOString().slice(0,10);
+function daysOf(d){const x=span(d);if(!x)return[d.date];const o=[];for(let t=Math.floor(x[0]/1440);t*1440<x[1];t++)o.push(dayStr(t));return o}
+function perOf(d,date){const x=span(d),t0=Date.parse(date+'T00:00:00Z')/6e4;if(!x||x[1]<=t0||x[0]>=t0+1440)return 0;if(x[2])return 3;return(x[0]<t0+720&&x[1]>t0?1:0)|(x[1]>t0+720&&x[0]<t0+1440?2:0)}
+function resState(z,date){
+ if((z.bloq||[]).includes(date))return{k:'red',e:'🔴',t:'Bloqueado'};
+ let m=0,full=false;S.deps.forEach(d=>{if(d.st==='Cancelada'||!d.res.includes(z.id))return;const p=perOf(d,date);m|=p;if(p===3&&(span(d)||[])[2])full=true});
+ if(!m)return{k:'green',e:'🟢',t:'Disponible'};
+ if(m===3)return{k:'blue',e:'🔵',t:full?'Full Day · sin disponibilidad':'Mañana y tarde ocupadas · sin disponibilidad'};
+ return{k:'orange',e:'🟠',t:m===1?'Mañana ocupada · tarde libre':'Tarde ocupada · mañana libre'};
+}
+// Motivo por el que el recurso no puede tomar la salida ('' = puede): día bloqueado o período ya ocupado (nunca cruces de horario)
+function resConflict(z,d){for(const x of daysOf(d)){if((z.bloq||[]).includes(x))return z.n+' está bloqueado el '+x;const p=perOf(d,x);if(!p)continue;
+  const o=S.deps.find(o=>o.id!=d.id&&o.st!=='Cancelada'&&o.res.includes(z.id)&&(perOf(o,x)&p));if(o)return z.n+' ya tiene un servicio en ese período: '+depLabel(o)}return''}
+const SEMC={red:'bad',blue:'azul',orange:'nar',green:'ok'};
+function semDates(z){const s=new Set(z.bloq||[]);S.deps.forEach(d=>{if(d.st!=='Cancelada'&&d.res.includes(z.id))daysOf(d).forEach(x=>s.add(x))});return[...s].sort()}
+function blockDay(id){const z=Z(id),x=v('bk'+id);if(!z)return;if(!/^\d{4}-\d{2}-\d{2}$/.test(x)||isNaN(Date.parse(x))){toast('Elige la fecha a bloquear');return}
+ if((z.bloq||[]).includes(x)){toast('Ese día ya está bloqueado');return}
+ const c=S.deps.find(d=>d.st!=='Cancelada'&&d.res.includes(id)&&daysOf(d).includes(x));
+ if(c){toast('Tiene asignada '+depLabel(c)+' ese día: cancela la salida antes de bloquear');return}
+ z.bloq=(z.bloq||[]).concat(x).sort();log('Día bloqueado: '+z.n+' '+x);render()}
+function unblockDay(id,x){const z=Z(id);if(!z)return;z.bloq=(z.bloq||[]).filter(y=>y!==x);log('Día desbloqueado: '+z.n+' '+x);render()}
+
+// ===== Vistas =====
+const NAV=[['panel','Panel'],['tar','Calculadora de tarifas'],['exc','Excursiones'],['res','Reservas'],['fin','Finanzas'],['aud','Auditoría'],['cfg','Respaldo y ajustes']];
+function go(x){view=x;render()}
+function render(){save();
+ $('nav').innerHTML=NAV.map(([k,t])=>`<button ${view==k?'aria-current="true"':''} onclick="go('${k}')">${t}</button>`).join('');
+ $('app').innerHTML=banner()+({panel,tar,exc,res,fin,aud,cfg}[view])();
+ if(view=='tar')calcOut();
+}
+function panel(){const inc=S.pay.filter(p=>!p.void).reduce((s,p)=>s+(p.k==='dev'?-p.amt:p.amt),0),gas=S.exp.filter(x=>!x.void).reduce((s,x)=>s+x.amt,0);
+ const due=S.res.reduce((s,r)=>s+Math.max(0,total(r)-paid(r)),0);
+ const up=S.deps.filter(d=>d.st!='Cancelada').sort((a,b)=>a.date.localeCompare(b.date)).slice(0,5);
+ return`<h1>Panel</h1><div class="grid">
+ <div class="card kpi"><b>${clp(inc)}</b><span>Cobrado (neto de devoluciones)</span></div>
+ <div class="card kpi"><b>${clp(gas)}</b><span>Gastos reales vigentes</span></div>
+ <div class="card kpi"><b>${clp(inc-gas)}</b><span>Resultado de caja estimado</span></div>
+ <div class="card kpi"><b>${clp(due)}</b><span>Por cobrar</span></div></div>
+ <div class="card"><h2>Próximas salidas</h2>${up.length?`<div class="tw"><table><tr><th>Salida</th><th class="n">Cupos</th></tr>${up.map(d=>`<tr><td>${depLabel(d)}</td><td class="n">${sold(d)}/${d.quota}</td></tr>`).join('')}</table></div>`:'<p class="mut">Aún no hay salidas. Crea una en Excursiones.</p>'}</div>
+ <div class="card"><h2>Flujo sugerido para probar</h2><p class="mut">1) Calcula un precio y guárdalo como precio de referencia. 2) Crea una salida y asigna recursos. 3) Registra una reserva y un abono. 4) Revisa saldos y rentabilidad en Finanzas.</p></div>`}
+
+function tar(){const e=cur();if(!e)return'<h1>Calculadora de tarifas</h1><div class="card"><p>Primero crea una excursión en la sección Excursiones.</p></div>';return`<h1>Calculadora de tarifas</h1>
+ <div class="card"><div class="row"><label>Excursión<select id="sx" onchange="selExc=this.value;render()">${S.exc.map(x=>`<option value="${x.id}" ${x.id==selExc?'selected':''}>${x.name}</option>`).join('')}</select></label>
+ <label>Mínimo operativo<input id="emin" type="number" min="1" value="${e.min}" oninput="setP('min',this.value)"></label>
+ <label>Capacidad máxima<input id="ecap" type="number" min="1" value="${e.cap}" onchange="setP('cap',this.value)"></label>
+ <label>Pasajeros de referencia<input id="eref" type="number" min="1" value="${e.ref}" oninput="setP('ref',this.value)"></label></div>
+ <label>Tasa de IVA configurada (%) <span class="tag pend">pendiente de validación</span><input id="iva" type="number" min="0" step="0.1" value="${S.iva}" placeholder="Sin definir: los importes se usan tal como se ingresan" oninput="S.iva=parseFloat(this.value)||'';calcOut();costTbl()"></label></div>
+ <div class="card"><h2>Costos</h2><div class="tw" id="ct"></div>
+ <div class="row" style="margin-top:.8rem"><label>Nombre<input id="cn"></label><label>Tipo<select id="ctp"><option value="fijo">Fijo por salida</option><option value="var">Variable por pasajero</option></select></label>
+ <label>Importe<input id="ca" type="number" min="0"></label><label>Ingresado como<select id="cb"><option value="neto">Neto</option><option value="bruto">Bruto</option></select></label>
+ <label>Documento<select id="cd"><option>Factura afecta</option><option>Factura exenta</option><option>Boleta</option><option>Boleta de honorarios</option><option>Gasto sin documento</option><option>Otro</option></select></label>
+ <label>IVA<select id="ci"><option value="pend">Pendiente de validación</option><option value="rec">Recuperable</option><option value="norec">No recuperable</option></select></label>
+ <button class="btn" onclick="addCost()">Agregar costo</button></div></div>
+ <div class="card"><h2>Rentabilidad y precio</h2><div class="row">
+ <label>Método<select id="mt" onchange="method=this.value;calcOut()"><option value="margin" ${method=='margin'?'selected':''}>Margen % sobre venta neta</option><option value="fixed" ${method=='fixed'?'selected':''}>Utilidad fija por pasajero</option></select></label>
+ <label>Margen % (sobre venta, no recargo)<input id="mg" type="number" value="${margin}" oninput="margin=+this.value;calcOut()"></label>
+ <label>Utilidad por pasajero<input id="pf" type="number" value="${profit}" oninput="profit=+this.value;calcOut()"></label>
+ <label>Canal<select id="chs" onchange="ch=this.value;calcOut()">${S.channels.map((c,i)=>`<option value="${i}" ${i==ch?'selected':''}>${c.n} (${c.c}%)</option>`).join('')}</select></label>
+ <label>Precio manual neto (opcional)<input id="pm" type="number" value="${manual}" oninput="manual=parseFloat(this.value)||'';calcOut()"></label></div>
+ <div id="co"></div></div>`}
+function setP(k,val){const e=cur(),n=Math.max(1,Math.floor(+val)||1),fix=()=>{$('e'+k).value=e[k]};
+ if(k==='cap'){const b=bookedMax(e.id);
+  if(n<b){toast(`No se puede reducir la capacidad a ${n}: hay una salida con ${b} pasajeros reservados`);fix();return}
+  if(S.deps.some(d=>d.exc==e.id&&d.quota>n)){toast('Hay salidas con más cupos que la nueva capacidad');fix();return}
+  if(n<e.min){toast(`La capacidad (${n}) no puede ser menor que el mínimo operativo (${e.min})`);fix();return}
+  if(e.ref>n){e.ref=n;$('eref').value=n;toast('Pasajeros de referencia ajustados a la nueva capacidad')}}
+ else if(n>e.cap){toast(`${k==='min'?'El mínimo operativo':'Los pasajeros de referencia'} (${n}) no pueden superar la capacidad (${e.cap})`);fix();return}
+ e[k]=n;calcOut()}
+function costTbl(){const e=cur(),t=totals(e);$('ct').innerHTML=`<table><tr><th>Costo</th><th>Tipo</th><th>Documento</th><th>IVA</th><th class="n">Importe</th><th class="n">Costo usado</th><th></th></tr>${e.costs.map(c=>`<tr><td>${c.n}</td><td>${c.t=='fijo'?'Fijo':'Variable'}</td><td>${c.doc}</td><td><span class="tag ${c.iva=='pend'?'pend':''}">${{pend:'pendiente',rec:'recuperable',norec:'no recuperable'}[c.iva]}</span></td><td class="n">${clp(c.amt)} ${c.base}</td><td class="n">${clp(cEff(c))}</td><td><button class="btn sec sm" onclick="delCost(${c.id})">Quitar</button></td></tr>`).join('')}<tr><th colspan="5">Fijos por salida / variables por pasajero</th><th class="n">${clp(t.f)} / ${clp(t.va)}</th><th></th></tr></table>`}
+function addCost(){const e=cur(),a=+v('ca');if(!v('cn')||!(a>=0)||v('ca')===''){toast('Completa nombre e importe');return}
+ e.costs.push({id:nid(),n:v('cn'),t:v('ctp'),amt:a,base:v('cb'),doc:v('cd'),iva:v('ci')});log('Costo agregado: '+v('cn'));render()}
+function delCost(id){const e=cur();e.costs=e.costs.filter(c=>c.id!=id);log('Costo quitado');render()}
+function calcOut(){save();const e=cur();if(!$('co')||!e)return;costTbl();const c=(S.channels[ch]||S.channels[0]||{c:0}).c/100,t=totals(e);
+ const sug=priceFor(e,e.ref,c),P=manual!==''?+manual:sug;if(!(P>0)){$('co').innerHTML='<p class="bad">Con este margen y esta comisión no existe un precio viable (comisión + margen no puede llegar a 100%).</p>';return}const be=breakEven(e,P,c),rows=occ(e,P,c);
+ const rf=rows[Math.min(e.ref,e.cap)-1];
+ const alt=method=='margin'?priceFor({...e},e.ref,c):0;
+ const cmp=[['Margen '+margin+'%',(t.f/e.ref+t.va)/(1-c-margin/100)],['Utilidad '+clp(profit),(t.f/e.ref+t.va+profit)/(1-c)]];
+ $('co').innerHTML=`<div class="grid" style="margin-top:.8rem">
+ <div class="card kpi"><b>${clp(sug)}</b><span>Precio neto sugerido (${e.ref} pax)</span></div>
+ <div class="card kpi"><b>${clp(P)}</b><span>Precio neto usado ${manual!==''?'(manual)':''}</span></div>
+ <div class="card kpi"><b>${rf?clp(rf.u):'—'}</b><span>Utilidad con ${e.ref} pax · margen ${rf?pc(rf.m):'—'}</span></div>
+ <div class="card kpi"><b>${be?be+' pax':'No alcanzable'}</b><span>Punto de equilibrio ${be&&be<e.min?'(menor al mínimo operativo)':''}</span></div></div>
+ <p class="mut">Comparación de métodos: ${cmp.map(x=>x[0]+' → '+clp(x[1])).join(' · ')}. IVA de venta: <span class="pend">pendiente de validación</span>; precios mostrados en neto. Comisión canal: ${clp(P*c)} por pasajero.</p>
+ <button class="btn" onclick="savePrice(${P})">Guardar como precio de referencia</button>
+ <h3 style="margin-top:1rem">Simulador de ocupación</h3><div class="tw"><table><tr><th>Pax</th><th class="n">Ingresos</th><th class="n">Comisiones</th><th class="n">Costos</th><th class="n">Utilidad</th><th class="n">Margen</th></tr>${rows.map(r=>`<tr><td>${r.n}${r.n==e.min?' <span class="tag blue">mín.</span>':''}</td><td class="n">${clp(r.rev)}</td><td class="n">${clp(r.cm)}</td><td class="n">${clp(r.cost)}</td><td class="n ${r.u<0?'bad':'ok'}">${clp(r.u)}</td><td class="n">${pc(r.m)}</td></tr>`).join('')}</table></div>`}
+function savePrice(P){const e=cur(),p=Math.round(P);if(!e||!(p>0)){toast('Precio inválido: no se guardó');return}
+ e.price=p;log(`Precio de referencia ${e.name}: ${clp(p)}`);
+ if(save())toast('Precio guardado. Las nuevas reservas lo usarán.');else toast('Precio actualizado, pero NO se pudo guardar en el navegador. Exporta un respaldo.')}
+
+function exc(){const ds=S.deps.slice().sort((a,b)=>a.date.localeCompare(b.date));
+ return`<h1>Excursiones y salidas</h1>
+ <div class="card"><h2>Catálogo</h2><div class="tw"><table><tr><th>Excursión</th><th>Duración</th><th class="n">Capacidad</th><th class="n">Mínimo</th><th class="n">Precio ref. (neto)</th><th></th></tr>${S.exc.map(e=>`<tr><td>${e.name}</td><td>${e.dur}</td><td class="n">${e.cap}</td><td class="n">${e.min}</td><td class="n">${e.price?clp(e.price):'<span class="mut">sin precio</span>'}</td><td><button class="btn sec sm" onclick="editExc(${e.id})">Editar</button> <button class="btn sec sm" onclick="delExc(${e.id})">Eliminar</button></td></tr>`).join('')}</table></div></div>
+ <div class="card"><h2>Nueva excursión</h2><div class="row"><label>Nombre<input id="xn"></label>${durHtml('xd','xh','Medio día')}<label>Capacidad máxima<input id="xc" type="number" min="1"></label><label>Mínimo operativo<input id="xm" type="number" min="1"></label><button class="btn" onclick="addExc()">Crear excursión</button></div></div>
+ <div class="card"><h2>Nuevo recurso</h2><div class="row"><label>Nombre<input id="zn"></label><label>Tipo<select id="zk"><option>Guía</option><option>Conductor</option><option>Vehículo</option><option>Transporte</option><option>Otro</option></select></label><button class="btn" onclick="addResource()">Agregar recurso</button></div></div>
+ <div class="card"><h2>Nueva salida</h2><div class="row"><label>Excursión<select id="dx">${S.exc.map(e=>`<option value="${e.id}">${e.name}</option>`).join('')}</select></label>
+ <label>Fecha<input id="dd" type="date"></label><label>Hora<input id="dt" type="time" value="08:00"></label><label>Cupos<input id="dq" type="number" min="1" value="10"></label><button class="btn" onclick="addDep()">Crear salida</button></div></div>
+ <div class="card"><h2>Salidas</h2>${ds.length?`<div class="tw"><table><tr><th>Salida</th><th class="n">Cupos</th><th>Recursos</th><th>Asignar</th><th></th></tr>${ds.map(d=>{const free=S.resources.filter(r=>!d.res.includes(r.id));return`<tr><td>${depLabel(d)}${d.st=='Cancelada'?' <span class="tag bad">cancelada</span>':''}</td><td class="n">${sold(d)}/${d.quota}</td><td>${d.res.map(i=>{const z=Z(i);return z?`<span class="tag blue">${z.n}</span>`:'<span class="tag bad">recurso inexistente</span>'}).join(' ')||'<span class="tag bad">sin recursos</span>'}</td><td><select id="as${d.id}" style="width:auto">${free.map(r=>{const no=resConflict(r,d)||S.deps.some(o=>o.id!=d.id&&o.st!='Cancelada'&&o.res.includes(r.id)&&overlap(d,o));return`<option value="${r.id}" ${no?'disabled':''}>${resState(r,d.date).e} ${r.n}${no?' (no disponible)':''}</option>`}).join('')}</select> <button class="btn sec sm" onclick="assign(${d.id})">Asignar</button></td><td>${d.st!='Cancelada'?`<button class="btn sec sm" onclick="cancelDep(${d.id})">Cancelar</button>`:''}</td></tr>`}).join('')}</table></div>`:'<p class="mut">No hay salidas todavía.</p>'}</div>
+ <div class="card"><h2>Recursos y calendario</h2><p class="mut">🔴 bloqueado · 🔵 sin disponibilidad (Full Day o mañana y tarde ocupadas) · 🟠 un período ocupado, queda el otro libre · 🟢 disponible. Las fechas sin marca están disponibles; los colores se actualizan solos según asignaciones y bloqueos.</p><div class="tw"><table><tr><th>Recurso</th><th>Tipo</th><th>Estado por fecha</th><th>Bloquear día</th><th></th></tr>${S.resources.map(r=>{const ds=semDates(r);return`<tr><td>${r.n}</td><td>${r.k}</td><td style="white-space:normal">${ds.map(x=>{const st=resState(r,x);return`<span class="tag ${SEMC[st.k]}">${st.e} ${x} · ${st.t}</span>${st.k==='red'?`<button class="btn sec sm" title="Desbloquear" onclick="unblockDay('${r.id}','${x}')">×</button>`:''}`}).join(' ')||'<span class="tag ok">🟢 completamente disponible</span>'}</td><td><input type="date" id="bk${r.id}" style="width:auto"> <button class="btn sec sm" onclick="blockDay('${r.id}')">Bloquear</button></td><td><button class="btn sec sm" onclick="delResource('${r.id}')">Quitar</button></td></tr>`}).join('')}</table></div></div>`}
+function addDep(){if(!v('dd')||!E(v('dx'))){toast('Elige excursión y fecha');return}const e=E(v('dx')),q0=v('dq').trim();
+ if(!/^\d+$/.test(q0)||+q0<1){toast('Los cupos deben ser un número entero de 1 o más');return}
+ const q=Math.min(+q0,e.cap);if(q<+q0)toast(`Cupos ajustados a la capacidad de la excursión (${e.cap})`);
+ S.deps.push({id:nid(),exc:e.id,date:v('dd'),time:v('dt'),quota:q,res:[],st:'Abierta'});log('Salida creada '+v('dd'));render()}
+function assign(id){const d=dep(id),r=v('as'+id);if(!d)return;if(!r){toast('No hay recursos disponibles para esta salida');return}if(!Z(r)){toast('El recurso ya no existe');return}if(d.res.includes(r))return;
+ const c=S.deps.find(o=>o.id!=id&&o.st!='Cancelada'&&o.res.includes(r)&&overlap(d,o));
+ if(c){toast('Conflicto: horario superpuesto con '+depLabel(c)+([d,c].some(o=>{const x=span(o);return x&&x[2]===1})?' (sin hora o duración reconocible: se considera todo el día)':''));return}const cf=resConflict(Z(r),d);if(cf){toast('Conflicto: '+cf);return}d.res.push(r);log('Recurso '+r+' asignado');render()}
+function cancelDep(id){if(!confirm('Cancelar esta salida? Sus reservas deberán gestionarse manualmente.'))return;dep(id).st='Cancelada';log('Salida cancelada');render()}
+
+function res(){const open=S.deps.filter(d=>d.st!='Cancelada'),q=(window._q||'').toLowerCase();
+ const list=S.res.filter(r=>!q||(r.name+r.wa+r.st).toLowerCase().includes(q));
+ return`<h1>Reservas</h1>
+ <div class="card"><h2>Nueva reserva</h2>${open.length?`<div class="row"><label>Responsable<input id="rn"></label><label>WhatsApp (obligatorio)<input id="rw" inputmode="tel" placeholder="+56 9 ..."></label>
+ <label>Correo (opcional)<input id="re" type="email"></label><label>Salida<select id="rd">${open.map(d=>`<option value="${d.id}">${depLabel(d)} · libres ${Math.max(0,avail(d))}</option>`).join('')}</select></label>
+ <label>Adultos<input id="ra" type="number" min="0" value="1"></label><label>Edades de menores (coma)<input id="rm" placeholder="Ej: 7,10"></label>
+ <button class="btn" onclick="addRes()">Reservar</button></div>`:'<p class="mut">Primero crea una salida en Excursiones.</p>'}</div>
+ <div class="card"><div class="row"><h2 style="flex:2">Reservas</h2><label>Buscar por nombre, WhatsApp o estado<input id="q" value="${esc(window._q||'')}" oninput="window._q=this.value;filt()"></label></div><div class="tw" id="rl">${resTbl(list)}</div></div>`}
+function filt(){const q=window._q.toLowerCase();$('rl').innerHTML=resTbl(S.res.filter(r=>(r.name+r.wa+r.st).toLowerCase().includes(q)))}
+function resTbl(list){if(!list.length)return'<p class="mut">Sin reservas.</p>';return`<table><tr><th>Responsable</th><th>Salida</th><th class="n">Pax</th><th class="n">Total</th><th class="n">Pagado</th><th class="n">Saldo</th><th>Estado</th><th>Acciones</th></tr>${list.map(r=>{const t=total(r),p=paid(r),d=dep(r.dep);return`<tr><td>${r.name}<br><span class="mut">${r.wa}</span></td><td>${depLabel(d)}</td><td class="n">${pax(r)}</td><td class="n">${clp(t)}</td><td class="n">${clp(p)}</td><td class="n ${t-p>0?'pend':'ok'}">${clp(t-p)}</td><td><span class="tag ${r.st=='Cancelada'?'bad':r.st=='Pagada'?'ok':''}">${r.st}</span></td><td><button class="btn sec sm" onclick="editRes(${r.id})">Editar</button> <button class="btn sec sm" onclick="payForm(${r.id})">Pago</button> <button class="btn sec sm" onclick="voucher(${r.id})">Voucher</button> ${r.st!='Cancelada'?`<button class="btn sec sm" onclick="cancelRes(${r.id})">Cancelar</button>`:''}</td></tr>`}).join('')}</table>`}
+function addRes(){const d=dep(v('rd')),a=cnt(v('ra')),mn=parseMn(v('rm')),wa=v('rw').trim();
+ if(!d){toast('Elige una salida válida');return}
+ if(isNaN(a)){toast('Adultos: indica un número entero de 0 o más');return}
+ if(!mn){toast('Edades de menores: números enteros entre 0 y 17 separados por coma');return}
+ if(!v('rn').trim()||wa.replace(/\D/g,'').length<8){toast('Nombre y WhatsApp válido son obligatorios');return}
+ const n=a+mn.length;if(n<1){toast('Indica al menos un pasajero');return}
+ if(n>avail(d)){toast(`Sin cupos: quedan ${Math.max(0,avail(d))}`);return}
+ const e=E(d.exc);if(!e){toast('La excursión de esta salida no existe');return}if(!e.price){toast('Esta excursión no tiene precio. Guárdalo desde la calculadora.');return}
+ const dup=S.res.find(r=>r.wa==wa&&r.dep==d.id&&r.st!='Cancelada');if(dup&&!confirm('Posible reserva duplicada (mismo WhatsApp y salida). Continuar?'))return;
+ S.res.push({id:nid(),name:v('rn').trim(),wa,email:v('re'),dep:d.id,ad:a,mn,unit:e.price,st:'Pendiente'});log('Reserva creada: '+v('rn'));render()}
+function payForm(id){const r=S.res.find(x=>x.id==id),m=document.createElement('div');m.className='modal';
+ m.innerHTML=`<div class="card" style="max-width:420px;width:100%"><h2>Registrar movimiento · ${r.name}</h2><p class="mut">Saldo: ${clp(total(r)-paid(r))}</p>
+ <label>Tipo<select id="pk"><option value="pago">Abono / pago</option><option value="dev">Devolución</option></select></label>
+ <label>Importe<input id="pa" type="number" min="1"></label><label>Medio<select id="pmd"><option>Transferencia</option><option>Efectivo</option><option>Tarjeta</option></select></label>
+ <label>Titular de la transferencia / motivo<input id="pt" placeholder="Puede ser distinto del responsable"></label>
+ <div class="row"><button class="btn" onclick="savePay(${id})">Guardar</button><button class="btn sec" onclick="this.closest('.modal').remove()">Cerrar</button></div></div>`;document.body.appendChild(m)}
+function savePay(id){const r=S.res.find(x=>x.id==id),a=+v('pa'),k=v('pk');if(!(a>0)){toast('Importe inválido');return}
+ if(k=='pago'&&a>total(r)-paid(r)){toast('El pago supera el saldo pendiente');return}
+ if(k=='dev'&&a>paid(r)){toast('La devolución supera lo pagado');return}
+ if(k=='dev'&&!v('pt').trim()){toast('Indica el motivo de la devolución');return}
+ S.pay.push({id:nid(),res:id,k,amt:a,med:v('pmd'),who:v('pt'),date:new Date().toISOString().slice(0,10)});
+ restat(r);
+ log(`${k=='dev'?'Devolución':'Pago'} ${clp(a)} reserva ${id}`);document.querySelector('.modal').remove();render()}
+function cancelRes(id){if(!confirm('Cancelar la reserva? Los pagos quedan registrados; las devoluciones se registran aparte.'))return;S.res.find(r=>r.id==id).st='Cancelada';log('Reserva cancelada '+id);render()}
+function voucher(id){const r=S.res.find(x=>x.id==id);if(!r){toast('La reserva no existe');return}
+ const d=dep(r.dep),e=d&&E(d.exc);if(!d||!e){toast('No se puede generar el voucher: la salida o la excursión de esta reserva ya no existe');return}
+ const t=total(r),p=paid(r),sal=t-p,dv=S.pay.filter(x=>x.res==r.id&&!x.void&&x.k==='dev').reduce((s,x)=>s+x.amt,0),
+ ln=(a,b,c)=>`<tr><td style="padding:.3rem 0;border-bottom:1px solid #D5DEE4">${a}</td><td style="padding:.3rem 0;border-bottom:1px solid #D5DEE4;text-align:right;font-weight:600;${c||''}">${b}</td></tr>`,
+ m=document.createElement('div');m.className='modal';
+ m.innerHTML=`<div class="voucher"><h2>Turismo Viaja · Voucher</h2>${r.st==='Cancelada'?'<p style="color:#C0392B;font-weight:700;margin:0 0 .5rem">RESERVA CANCELADA</p>':''}<p><b>Responsable:</b> ${r.name}<br><b>Excursión:</b> ${e.name}<br><b>Fecha y hora:</b> ${d.date} ${d.time}<br><b>Pasajeros:</b> ${pax(r)} (${r.ad} adultos, ${r.mn.length} menores${r.mn.length?': edades '+r.mn.join(', '):''})<br><b>Duración:</b> ${e.dur}<br><b>Estado:</b> ${r.st}</p>
+ <table style="width:100%;border-top:1px solid #D5DEE4;margin:.4rem 0 .6rem;color:#12263A">${ln('Valor por pasajero',clp(r.unit))}${ln('Valor total',clp(t))}${ln('Abonado'+(dv>0?' (neto de devoluciones)':''),clp(p))}${ln(sal<0?'Saldo a favor del pasajero':'Saldo pendiente',clp(Math.abs(sal)),'color:'+(sal>0?'#C0392B':'#1E8E5A'))}</table>
+ <p style="font-size:.8rem;color:#5B6B7A">Valores en pesos chilenos (CLP). IVA pendiente de validación.</p>
+ <button onclick="window.print()" class="btn">Imprimir / guardar PDF</button> <button class="btn sec" style="color:#12263A" onclick="this.closest('.modal').remove()">Cerrar</button></div>`;document.body.appendChild(m);log('Voucher generado reserva '+id)}
+
+function fin(){const act=S.exp.filter(x=>!x.void);
+ const prof=S.deps.map(d=>{const rs=S.res.filter(r=>r.dep==d.id),inc=S.pay.filter(p=>!p.void&&rs.some(r=>r.id==p.res)).reduce((s,p)=>s+(p.k=='dev'?-p.amt:p.amt),0),n=sold(d),t=totals(E(d.exc)),est=n?t.f+t.va*n:0,real=act.filter(x=>x.dep==d.id).reduce((s,x)=>s+x.amt,0);return{d,inc,est,real}});
+ return`<h1>Finanzas</h1>${finKpi()}<p class="mut">Herramienta administrativa. No reemplaza la contabilidad oficial. Los registros no se borran: se anulan.</p>
+ <div class="card"><h2>Registrar gasto real</h2><div class="row"><label>Descripción<input id="gd"></label><label>Importe<input id="gm" type="number" min="1"></label>
+ <label>Salida (opcional)<select id="gs"><option value="">Sin salida</option>${S.deps.map(d=>`<option value="${d.id}">${depLabel(d)}</option>`).join('')}</select></label>
+ <label>Documento<select id="gx"><option>Factura afecta</option><option>Factura exenta</option><option>Boleta</option><option>Boleta de honorarios</option><option>Sin documento</option></select></label><button class="btn" onclick="addExp()">Registrar</button></div></div>
+ <div class="card"><h2>Gastos</h2>${S.exp.length?`<div class="tw"><table><tr><th>Fecha</th><th>Descripción</th><th>Salida</th><th>Documento</th><th class="n">Importe</th><th></th></tr>${S.exp.map(x=>`<tr style="${x.void?'opacity:.5;text-decoration:line-through':''}"><td>${x.date}</td><td>${x.d}</td><td>${x.dep?depLabel(dep(x.dep)):'—'}</td><td>${x.doc}</td><td class="n">${clp(x.amt)}</td><td>${x.void?'<span class="tag bad">anulado</span>':`<button class="btn sec sm" onclick="voidExp(${x.id})">Anular</button>`}</td></tr>`).join('')}</table></div>`:'<p class="mut">Sin gastos.</p>'}</div>
+ <div class="card"><h2>Rentabilidad por salida: estimado vs real</h2>${prof.length?`<div class="tw"><table><tr><th>Salida</th><th class="n">Cobrado</th><th class="n">Costo estimado</th><th class="n">Gasto real</th><th class="n">Desvío</th><th class="n">Resultado</th></tr>${prof.map(p=>`<tr><td>${depLabel(p.d)}</td><td class="n">${clp(p.inc)}</td><td class="n">${clp(p.est)}</td><td class="n">${clp(p.real)}</td><td class="n ${p.real>p.est?'bad':'ok'}">${clp(p.real-p.est)}</td><td class="n">${clp(p.inc-p.real)}</td></tr>`).join('')}</table></div>`:'<p class="mut">Sin salidas.</p>'}</div>
+ ${byExc(prof)}<div class="card"><h2>Cuentas por cobrar</h2>${S.res.filter(r=>total(r)-paid(r)>0).map(r=>`<p>${r.name}: ${clp(total(r)-paid(r))}</p>`).join('')||'<p class="mut">Sin saldos pendientes.</p>'}</div>
+ <div class="card"><h2>Pagos recibidos</h2>${S.pay.length?`<div class="tw"><table><tr><th>Fecha</th><th>Reserva</th><th>Tipo</th><th>Medio</th><th>Titular / motivo</th><th class="n">Importe</th><th></th></tr>${S.pay.map(p=>`<tr><td>${p.date}</td><td>${(S.res.find(r=>r.id==p.res)||{name:'(reserva inexistente)'}).name}</td><td>${p.k=='dev'?'Devolución':'Pago'}</td><td>${p.med}</td><td>${p.who||'—'}</td><td class="n">${p.k=='dev'?'−':''}${clp(p.amt)}</td><td>${p.void?'<span class="tag bad">anulado</span>':`<button class="btn sec sm" onclick="voidPay(${p.id})">Anular</button>`}</td></tr>`).join('')}</table></div>`:'<p class="mut">Sin pagos. Cada pago se registra una sola vez y alimenta Finanzas automáticamente.</p>'}</div>`}
+function addExp(){const a=+v('gm');if(!v('gd').trim()||!(a>0)){toast('Descripción e importe son obligatorios');return}
+ S.exp.push({id:nid(),d:v('gd'),amt:a,dep:v('gs'),doc:v('gx'),date:new Date().toISOString().slice(0,10)});log('Gasto registrado '+clp(a));render()}
+function voidExp(id){if(!confirm('Anular este gasto? Quedará visible como anulado.'))return;S.exp.find(x=>x.id==id).void=true;log('Gasto anulado '+id);render()}
+function aud(){return`<h1>Auditoría</h1><div class="card">${S.audit.length?`<div class="tw"><table><tr><th>Fecha</th><th>Usuario</th><th>Acción</th></tr>${S.audit.map(a=>`<tr><td>${a.t}</td><td>${a.u}</td><td>${a.a}</td></tr>`).join('')}</table></div>`:'<p class="mut">Aún no hay actividad.</p>'}</div>`}
+const restat=r=>{if(r.st==='Cancelada')return;const t=total(r),p=paid(r);r.st=t>0&&p>=t?'Pagada':p>0?'Con abono':'Pendiente'};
+const DK=['exc','deps','res','pay','exp','resources'],hasDemo=()=>DK.some(k=>S[k].some(x=>x.demo));
+const today=()=>new Date().toISOString().slice(0,10);
+function banner(){return(locked?'<div class="banner bad"><b>Los datos guardados están dañados o no son compatibles con esta versión.</b> No se modificarán ni se eliminarán'+(lockCopy?' (copia en este navegador: '+esc(lockCopy)+')':'')+'. Lo que ingreses ahora no se guardará. Restaura un respaldo en Respaldo y ajustes.'+(lockWhy.length?'<br>• '+lockWhy.map(m=>esc(m)).join('<br>• '):'')+'</div>':'')+(!storeOK?'<div class="banner bad">Este navegador no permite guardar datos. Lo que ingreses se perderá al cerrar: exporta respaldos.</div>':'')+(hasDemo()?'<div class="banner"><b>Hay datos de demostración activos.</b> Elimínalos en Respaldo y ajustes antes de ingresar datos reales.</div>':'')+'<div class="banner">Los datos se guardan solo en este navegador y computador. IVA y otros impuestos: pendiente de validación con SII y contador.</div>'}
+function modal(h){const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="card" style="max-width:440px;width:100%">${h}<div class="row"><button class="btn sec" onclick="this.closest('.modal').remove()">Cerrar</button></div></div>`;document.body.appendChild(m)}
+function addExc(){const n=v('xn').trim(),cap=+v('xc'),mn=+v('xm');if(!n||!(cap>=1)||!(mn>=1)||mn>cap){toast('Indica nombre, capacidad y mínimo (mínimo no mayor que la capacidad)');return}
+ const dr=readDur('xd','xh');if(!dr){toast('Indica cuántas horas dura la excursión abierta (mayor a 0)');return}
+ S.exc.push({id:nid(),name:n,cap,min:mn,ref:mn,price:0,dur:dr,costs:[]});selExc=S.exc[S.exc.length-1].id;log('Excursión creada: '+n);render()}
+function editExc(id){const e=E(id);modal(`<h2>Editar excursión</h2><label>Nombre<input id="en" value="${e.name}"></label>${durHtml('ed','eh',e.dur)}<label>Capacidad<input id="ec" type="number" min="1" value="${e.cap}"></label><label>Mínimo<input id="em" type="number" min="1" value="${e.min}"></label><button class="btn" onclick="saveExc(${id})">Guardar</button>`)}
+function saveExc(id){const e=E(id),n=v('en').trim(),c=+v('ec'),m=+v('em');if(!n||!(c>=1)||!(m>=1)||m>c){toast('Datos inválidos: el mínimo no puede superar la capacidad');return}
+ if(S.deps.some(d=>d.exc==id&&d.quota>c)){toast('Hay salidas con más cupos que la nueva capacidad');return}
+ const b=bookedMax(id);if(b>c){toast(`No se puede reducir la capacidad a ${c}: hay una salida con ${b} pasajeros reservados`);return}
+ let nd=readDur('ed','eh');if(!nd){if(v('ed')==='Abierta'&&durMin(e.dur)==null)nd=e.dur;else{toast('Indica cuántas horas dura la excursión abierta (mayor a 0)');return}}if(nd!==e.dur){const od=e.dur;e.dur=nd;const cl=S.deps.find(d=>d.exc==id&&d.st!=='Cancelada'&&d.res.some(z=>S.deps.some(o=>o.id!=d.id&&o.st!=='Cancelada'&&o.res.includes(z)&&overlap(d,o))));e.dur=od;if(cl){toast('Con esa duración, la salida '+depLabel(cl)+' se superpondría con otra que usa el mismo recurso');return}}
+ Object.assign(e,{name:n,dur:nd,cap:c,min:m,ref:Math.min(e.ref,c)});log('Excursión editada');document.querySelector('.modal').remove();render()}
+function delExc(id){if(S.deps.some(d=>d.exc==id)){toast('Tiene salidas: no se puede eliminar');return}if(!confirm('Eliminar esta excursión y sus costos?'))return;S.exc=S.exc.filter(e=>e.id!=id);log('Excursión eliminada');render()}
+function addResource(){const n=v('zn').trim();if(!n){toast('Indica el nombre');return}S.resources.push({id:'R'+nid(),n,k:v('zk')});log('Recurso creado: '+n);render()}
+function delResource(id){if(S.deps.some(d=>d.res.includes(id))){toast('Está asignado a salidas: no se puede quitar');return}if(!confirm('Quitar este recurso?'))return;S.resources=S.resources.filter(r=>r.id!=id);log('Recurso quitado');render()}
+function editRes(id){const r=S.res.find(x=>x.id==id);modal(`<h2>Editar reserva</h2><label>Responsable<input id="en" value="${r.name}"></label><label>WhatsApp<input id="ew" value="${r.wa}"></label><label>Correo<input id="ee" value="${r.email||''}"></label><label>Adultos<input id="ea" type="number" min="0" value="${r.ad}"></label><label>Edades de menores<input id="el" value="${r.mn.join(',')}"></label><button class="btn" onclick="saveRes(${id})">Guardar</button>`)}
+function saveRes(id){const r=S.res.find(x=>x.id==id),d=dep(r.dep),a=cnt(v('ea')),mn=parseMn(v('el')),wa=v('ew').trim(),n=a+(mn?mn.length:0);
+ if(isNaN(a)){toast('Adultos: indica un número entero de 0 o más');return}
+ if(!mn){toast('Edades de menores: números enteros entre 0 y 17 separados por coma');return}
+ if(!v('en').trim()||wa.replace(/\D/g,'').length<8||n<1){toast('Nombre, WhatsApp válido y al menos un pasajero');return}
+ if(r.st!=='Cancelada'&&d&&n>avail(d)+pax(r)){toast('Sin cupos para ese cambio: esta reserva puede tener hasta '+Math.max(0,avail(d)+pax(r))+' pasajeros');return}
+ if(paid(r)>n*r.unit){toast('El nuevo total quedaría bajo lo ya pagado: registra antes una devolución');return}
+ Object.assign(r,{name:v('en').trim(),wa,email:v('ee'),ad:a,mn});restat(r);log('Reserva editada '+id);document.querySelector('.modal').remove();render()}
+function voidPay(id){const p=S.pay.find(x=>x.id==id);if(!confirm('Anular este movimiento? Quedará visible como anulado.'))return;p.void=true;const rr=S.res.find(r=>r.id==p.res);if(rr)restat(rr);log('Movimiento anulado '+id);render()}
+function finKpi(){const inc=S.pay.filter(p=>!p.void).reduce((s,p)=>s+(p.k=='dev'?-p.amt:p.amt),0),g=S.exp.filter(x=>!x.void).reduce((s,x)=>s+x.amt,0),due=S.res.reduce((s,r)=>s+Math.max(0,total(r)-paid(r)),0),dv=S.pay.filter(p=>!p.void&&p.k=='dev').reduce((s,p)=>s+p.amt,0);
+ return`<div class="grid"><div class="card kpi"><b>${clp(inc)}</b><span>Ingresos cobrados (netos)</span></div><div class="card kpi"><b>${clp(dv)}</b><span>Devoluciones</span></div><div class="card kpi"><b>${clp(g)}</b><span>Gastos</span></div><div class="card kpi"><b>${clp(inc-g)}</b><span>Resultado de caja</span></div><div class="card kpi"><b>${clp(due)}</b><span>Por cobrar</span></div></div>`}
+function byExc(prof){const m={};prof.forEach(p=>{const k=p.d.exc,o=m[k]||(m[k]={inc:0,real:0});o.inc+=p.inc;o.real+=p.real});const ks=Object.keys(m);
+ return`<div class="card"><h2>Resultado por excursión</h2>${ks.length?`<div class="tw"><table><tr><th>Excursión</th><th class="n">Cobrado</th><th class="n">Gasto real</th><th class="n">Resultado</th></tr>${ks.map(k=>`<tr><td>${(E(k)||{name:'(excursión inexistente)'}).name}</td><td class="n">${clp(m[k].inc)}</td><td class="n">${clp(m[k].real)}</td><td class="n">${clp(m[k].inc-m[k].real)}</td></tr>`).join('')}</table></div>`:'<p class="mut">Sin datos.</p>'}</div>`}
+function cfg(){let sz=0;try{sz=(localStorage.getItem(KEY)||'').length}catch(e){}
+ return`<h1>Respaldo y ajustes</h1>
+ <div class="card"><h2>Respaldo</h2><p class="mut">Tamaño guardado: ${(sz/1024).toFixed(1)} KB. Exporta una copia con frecuencia y guárdala fuera del navegador.</p><div class="row"><button class="btn" onclick="exportB()">Exportar respaldo</button><label>Restaurar desde archivo<input id="imp" type="file" accept=".json" onchange="importB(this.files[0])"></label></div></div>
+ <div class="card"><h2>Canales de venta</h2><div class="tw"><table><tr><th>Canal</th><th>Comisión %</th><th></th></tr>${S.channels.map((c,i)=>`<tr><td>${c.n}</td><td><input type="number" min="0" max="99" step="0.1" value="${c.c}" onchange="setCh(${i},this.value)" style="width:90px"></td><td><button class="btn sec sm" onclick="delCh(${i})">Quitar</button></td></tr>`).join('')}</table></div>
+ <div class="row" style="margin-top:.6rem"><label>Nuevo canal<input id="hn"></label><label>Comisión %<input id="hc" type="number" min="0" max="99" step="0.1"></label><button class="btn" onclick="addCh()">Agregar canal</button></div></div>
+ <div class="card"><h2>Datos de demostración</h2><p class="mut">Se marcan con [DEMO] y se eliminan sin tocar tus datos reales.</p><div class="row"><button class="btn sec" onclick="loadDemo()">Activar demostración</button><button class="btn sec" onclick="clearDemo()">Eliminar demostración</button></div></div>
+ <div class="card"><h2>Borrar todos los datos</h2><p class="mut">Exporta un respaldo antes. Se pedirá confirmación escrita.</p><button class="btn bad" onclick="resetAll()">Borrar todo</button></div>`}
+function setCh(i,x){const c=+x;if(!(c>=0&&c<100)){toast('Comisión entre 0 y 99');return}S.channels[i].c=c;log('Comisión editada');render()}
+function delCh(i){if(S.channels.length<2){toast('Debe quedar al menos un canal');return}if(!confirm('Quitar este canal?'))return;S.channels.splice(i,1);ch=0;log('Canal quitado');render()}
+function addCh(){const n=v('hn').trim(),c=+v('hc');if(!n||!(c>=0&&c<100)){toast('Nombre y comisión (0 a 99) obligatorios');return}S.channels.push({n,c});log('Canal creado: '+n);render()}
+function exportB(){const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='sentinel-respaldo-'+today()+'.json';a.click();log('Respaldo exportado');save()}
+function norm(o){return typeof o=='string'?esc(unesc(o)):Array.isArray(o)?o.map(norm):o&&typeof o=='object'?Object.fromEntries(Object.entries(o).map(([k,x])=>[k,norm(x)])):o}
+const BK=['ver','iva','user','channels','exc','resources','deps','res','pay','exp','audit'],LBL={exc:'Excursión',deps:'Salida',res:'Reserva',pay:'Pago',exp:'Gasto',resources:'Recurso',channels:'Canal',audit:'Auditoría'};
+// Devuelve la lista de problemas (vacía = válido). No modifica nada.
+// shape=true: solo estructura (tipos, ids, versión), que es lo que exige migrate() al cargar datos guardados.
+// Completo: además vínculos entre registros, cupos/capacidades y coherencia de pagos y estados.
+function validateBackup(d,shape){let n=0;const er=[],bad=m=>{if(n++<6)er.push(m)},out=()=>{if(n>er.length)er.push(`…y ${n-er.length} problema(s) más`);return er};
+ const isO=x=>!!x&&typeof x==='object'&&!Array.isArray(x),isS=x=>typeof x==='string',isN=x=>typeof x==='number'&&isFinite(x),isI=x=>Number.isInteger(x),idOk=x=>isN(x)||(isS(x)&&x!=='');
+ if(!isO(d))return['los datos no tienen el formato de Sentinel'];
+ if(d.ver!==undefined&&!(isI(d.ver)&&d.ver>=1&&d.ver<=VER))return['versión de datos no compatible: '+d.ver];
+ for(const k of ['exc','deps','res','pay'].concat(d.ver>=2?['resources','exp','channels']:[]))if(!Array.isArray(d[k]))bad(`falta la sección "${k}" o no es una lista`);
+ for(const k of ['resources','exp','channels','audit'])if(d[k]!==undefined&&!Array.isArray(d[k]))bad(`la sección "${k}" no es una lista`);
+ if(n)return out();
+ if(d.iva!==undefined&&d.iva!==''&&!(isN(d.iva)&&d.iva>=0))bad('IVA inválido');
+ if(d.user!==undefined&&!isS(d.user))bad('usuario inválido');
+ const L=k=>d[k]||[],each=(k,f)=>L(k).forEach((o,i)=>{if(isO(o))f(o,`${LBL[k]} #${i+1}`)});
+ const ids=k=>{const s=new Set();L(k).forEach((o,i)=>{if(!isO(o)||!idOk(o.id)){bad(`${LBL[k]} #${i+1}: registro sin id válido`);return}if(s.has(String(o.id)))bad(`${LBL[k]}: id repetido (${o.id})`);s.add(String(o.id))});return s};
+ const xi=ids('exc'),di=ids('deps'),ri=ids('res'),zi=ids('resources');ids('pay');ids('exp');
+ each('exc',(e,p)=>{if(!isS(e.name)||!e.name.trim())bad(p+': sin nombre');if(!isI(e.cap)||e.cap<1)bad(p+': capacidad inválida');if(!isI(e.min)||e.min<1)bad(p+': mínimo inválido');if(!isN(e.ref)||e.ref<1)bad(p+': pasajeros de referencia inválidos');if(!isN(e.price)||e.price<0)bad(p+': precio inválido');if(e.dur!==undefined&&!isS(e.dur))bad(p+': duración inválida');
+  if(!Array.isArray(e.costs)||!e.costs.every(c=>isO(c)&&(c.t==='fijo'||c.t==='var')&&isN(c.amt)&&c.amt>=0))bad(p+': costos inválidos')});
+ each('resources',(z,p)=>{if(!isS(z.n)||!z.n.trim())bad(p+': sin nombre');if(z.bloq!==undefined&&!(Array.isArray(z.bloq)&&z.bloq.every(x=>isS(x)&&/^\d{4}-\d{2}-\d{2}$/.test(x)&&!isNaN(Date.parse(x)))))bad(p+': días bloqueados inválidos')});
+ each('deps',(x,p)=>{if(!shape&&!xi.has(String(x.exc)))bad(p+': la excursión asociada no existe');if(!isS(x.date)||!/^\d{4}-\d{2}-\d{2}$/.test(x.date)||isNaN(Date.parse(x.date)))bad(p+': fecha inválida');if(!isS(x.time)||(x.time!==''&&!/^\d{1,2}:\d{2}/.test(x.time)))bad(p+': hora inválida');if(!isI(x.quota)||x.quota<1)bad(p+': cupos inválidos');if(!isS(x.st))bad(p+': estado inválido');
+  if(!Array.isArray(x.res)||!x.res.every(z=>isS(z)&&(shape||zi.has(z))))bad(p+': recursos asignados inválidos o inexistentes')});
+ each('res',(r,p)=>{if(!shape&&!di.has(String(r.dep)))bad(p+': la salida asociada no existe');if(!isS(r.name)||!r.name.trim())bad(p+': sin responsable');if(!isS(r.wa))bad(p+': WhatsApp inválido');if(!isI(r.ad)||r.ad<0)bad(p+': adultos inválidos');
+  if(!Array.isArray(r.mn)||!r.mn.every(a=>isI(a)&&a>=0&&a<18))bad(p+': edades de menores inválidas');else if(isI(r.ad)&&r.ad+r.mn.length<1)bad(p+': sin pasajeros');
+  if(!isN(r.unit)||r.unit<0)bad(p+': valor unitario inválido');if(!['Pendiente','Con abono','Pagada','Cancelada'].includes(r.st))bad(p+': estado inválido')});
+ each('pay',(x,p)=>{if(!shape&&!ri.has(String(x.res)))bad(p+': la reserva asociada no existe');if(x.k!=='pago'&&x.k!=='dev')bad(p+': tipo inválido');if(!isN(x.amt)||x.amt<=0)bad(p+': importe inválido');if(!isS(x.date))bad(p+': fecha inválida');if(x.void!==undefined&&typeof x.void!=='boolean')bad(p+': estado de anulación inválido')});
+ each('exp',(x,p)=>{if(!shape&&x.dep!==''&&x.dep!=null&&!di.has(String(x.dep)))bad(p+': la salida asociada no existe');if(!isN(x.amt)||x.amt<=0)bad(p+': importe inválido');if(!isS(x.d))bad(p+': sin descripción')});
+ L('channels').forEach((c,i)=>{if(!isO(c)||!isS(c.n)||!c.n.trim()||!isN(c.c)||c.c<0||c.c>=100)bad(`Canal #${i+1}: nombre o comisión inválidos`)});
+ if(d.channels!==undefined&&!d.channels.length)bad('no hay canales de venta');
+ L('audit').forEach((a,i)=>{if(!isO(a))bad(`Auditoría #${i+1}: registro inválido`)});
+ if(shape||n)return out();
+ // Coherencia entre registros (aquí la estructura ya es válida)
+ const X={},Zm={},sd={},pg={};L('exc').forEach(e=>{X[String(e.id)]=e});L('resources').forEach(z=>{Zm[String(z.id)]=z});
+ L('res').forEach(r=>{if(r.st!=='Cancelada'){const k=String(r.dep);sd[k]=(sd[k]||0)+r.ad+r.mn.length}});
+ L('pay').forEach(x=>{if(!x.void){const k=String(x.res);pg[k]=(pg[k]||0)+(x.k==='dev'?-x.amt:x.amt)}});
+ each('exc',(e,p)=>{if(e.min>e.cap)bad(`${p}: el mínimo (${e.min}) supera la capacidad (${e.cap})`);if(e.ref>e.cap)bad(`${p}: los pasajeros de referencia (${e.ref}) superan la capacidad (${e.cap})`)});
+ each('deps',(x,p)=>{const c=X[String(x.exc)].cap,s=sd[String(x.id)]||0;
+  if(x.st!=='Cancelada')x.res.forEach(i=>{const z=Zm[i];if(z&&(z.bloq||[]).includes(x.date))bad(`${p}: asigna a "${z.n}" en un día bloqueado (${x.date})`)});
+  if(x.quota>c)bad(`${p}: los cupos (${x.quota}) superan la capacidad de la excursión (${c})`);
+  if(x.st!=='Cancelada'&&s>Math.min(x.quota,c))bad(`${p}: ${s} pasajeros reservados superan ${s>x.quota?`los cupos (${x.quota})`:`la capacidad de la excursión (${c})`}`)});
+ // Conflictos de un mismo recurso entre salidas no canceladas: mismo período (perOf) o horarios superpuestos (overlap).
+ // Esas funciones leen el estado global S, así que se evalúan temporalmente sobre los datos del respaldo y se restaura S al terminar.
+ const S0=S;S=d;try{L('resources').forEach(z=>{const ds=[];L('deps').forEach((x,i)=>{if(x.st!=='Cancelada'&&x.res.map(String).includes(String(z.id)))ds.push([x,i+1])});
+  for(let a=0;a<ds.length;a++)for(let c=a+1;c<ds.length;c++){const A=ds[a][0],B=ds[c][0],ov=overlap(A,B),dy=daysOf(A).find(t=>daysOf(B).includes(t)&&(perOf(A,t)&perOf(B,t)));
+   if(ov||dy)bad(`${LBL.deps} #${ds[a][1]} y #${ds[c][1]}: "${z.n}" tiene ${ov?'horarios superpuestos':'el mismo período (mañana o tarde) ocupado el '+dy}`)}})}finally{S=S0}
+ each('res',(r,p)=>{const t=(r.ad+r.mn.length)*r.unit,g=pg[String(r.id)]||0;
+  if(g<-.5)bad(`${p}: las devoluciones superan lo pagado (${clp(-g)} de más)`);
+  if(r.st==='Cancelada')return;
+  if(g>t+.5)bad(`${p}: lo pagado (${clp(g)}) supera el total (${clp(t)})`);
+  const ex=t>0&&g>=t?'Pagada':g>0?'Con abono':'Pendiente';if(r.st!==ex)bad(`${p}: el estado "${r.st}" no corresponde a los pagos registrados (debería ser "${ex}")`)});
+ return out()}
+function importB(f){if(!f)return;const r=new FileReader();r.onerror=()=>alert('No se pudo leer el archivo.');
+ r.onload=()=>{try{let d;try{d=JSON.parse(r.result)}catch(e){throw Error('el archivo está dañado o no es un JSON válido')}
+ const er=validateBackup(d);if(er.length)throw Error('respaldo incompleto o inconsistente. No se modificó ningún dato actual.\n• '+er.join('\n• '));
+ const cl={};BK.forEach(k=>{if(k in d)cl[k]=d[k]});const nS=migrate(norm(cl));
+ if(!confirm(`Restaurar reemplaza TODOS los datos actuales (${S.exc.length} excursiones, ${S.res.length} reservas) por el respaldo (${d.exc.length} excursiones, ${d.res.length} reservas).${d.exc.length+d.res.length===0&&S.exc.length+S.res.length>0?'\n\nATENCIÓN: el respaldo está vacío.':''} Se guarda antes una copia previa en el navegador. Continuar?`))return;
+ if(storeOK){if(!locked)try{localStorage.setItem(KEY+'_prev',JSON.stringify(S))}catch(e){}
+  try{localStorage.setItem(KEY,JSON.stringify(nS))}catch(e){throw Error('no hay espacio para guardar el respaldo en el navegador. No se modificó ningún dato actual.')}}
+ S=nS;locked=false;log('Respaldo restaurado');render();toast('Respaldo restaurado')}catch(e){alert('No se pudo restaurar: '+e.message)}};r.readAsText(f)}
+function loadDemo(){if(hasDemo()){toast('La demostración ya está activa');return}const eid=nid(),did=nid(),rid=nid(),g='R'+nid(),dt=new Date(Date.now()+6048e5).toISOString().slice(0,10);
+ S.resources.push({id:g,n:'[DEMO] Guía',k:'Guía',demo:1});
+ S.exc.push({id:eid,name:'[DEMO] Excursión de prueba',cap:12,min:4,ref:6,price:35000,dur:'6 h',demo:1,costs:[{id:nid(),n:'Transporte',t:'fijo',amt:100000,base:'neto',doc:'Otro',iva:'pend'},{id:nid(),n:'Entradas',t:'var',amt:5000,base:'neto',doc:'Otro',iva:'pend'}]});
+ S.deps.push({id:did,exc:eid,date:dt,time:'09:00',quota:10,res:[g],st:'Abierta',demo:1});
+ S.res.push({id:rid,name:'[DEMO] Cliente',wa:'+56 9 0000 0000',email:'',dep:did,ad:2,mn:[8],unit:35000,st:'Con abono',demo:1});
+ S.pay.push({id:nid(),res:rid,k:'pago',amt:50000,med:'Transferencia',who:'[DEMO]',date:today(),demo:1});
+ S.exp.push({id:nid(),d:'[DEMO] Gasto',amt:20000,dep:String(did),doc:'Sin documento',date:today(),demo:1});log('Demostración activada');render()}
+function clearDemo(){const D=k=>new Set(S[k].filter(x=>x.demo).map(x=>x.id)),de=D('exc'),dd=D('deps'),dr=D('res'),dz=D('resources');
+ const bad=S.deps.some(d=>!d.demo&&(de.has(d.exc)||d.res.some(i=>dz.has(i))))||S.res.some(r=>!r.demo&&dd.has(r.dep))||S.pay.some(p=>!p.demo&&dr.has(p.res))||S.exp.some(x=>!x.demo&&dd.has(+x.dep));
+ if(bad){alert('Hay datos reales vinculados a la demostración. Cancela o reasigna esos registros antes de eliminarla.');return}
+ if(!confirm('Eliminar solo los datos de demostración?'))return;DK.forEach(k=>{S[k]=S[k].filter(x=>!x.demo)});log('Demostración eliminada');render()}
+function resetAll(){if(prompt('Escribe BORRAR para eliminar TODOS los datos. Exporta un respaldo antes.')!=='BORRAR')return;try{localStorage.setItem(KEY+'_prev',JSON.stringify(S))}catch(e){}S=blank();locked=false;render();toast('Datos borrados')}
+addEventListener('storage',e=>{if(e.key===KEY&&!locked){load();render()}});
+load();render();
+
+</script></body></html>
